@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class AccountData {
-  int user_id;
+  String user_id;
   Map<String, String> headers;
   int expiresIn;
 
@@ -16,9 +16,48 @@ class AccountData {
   // Dont think this will be used
   factory AccountData.fromJson(Map<String, dynamic> json) {
     return AccountData(
-      user_id: int.parse(json['id'].toString()),
+      user_id: json['id'],
       headers: json['headers'] as Map<String, String>,
       expiresIn: int.parse(json['expiresIn']),
+    );
+  }
+}
+
+class WeaponSkin {
+  String id;
+  String name;
+  String imageLink;
+
+  WeaponSkin({
+    required this.id,
+    required this.name,
+    required this.imageLink,
+  }) {}
+
+  // Dont think this will be used
+  factory WeaponSkin.fromJson(Map<String, dynamic> json) {
+    return WeaponSkin(
+      id: json['levels'][0]['uuid'],
+      name: json['displayName'],
+      imageLink: json['displayIcon'],
+    );
+  }
+}
+
+class Store {
+  int timeLeft;
+  List<dynamic> offers;
+
+  Store({
+    required this.timeLeft,
+    required this.offers,
+  }) {}
+
+  // Dont think this will be used
+  factory Store.fromJson(Map<String, dynamic> json) {
+    return Store(
+      timeLeft: json['SingleItemOffersRemainingDurationInSeconds'],
+      offers: json['SingleItemOffers'],
     );
   }
 }
