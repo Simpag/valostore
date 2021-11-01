@@ -1,104 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:valostore/api/valo_api.dart';
+import 'package:valostore/screens/sign_in.dart';
+import 'package:valostore/screens/store_page.dart';
 
 import 'api/api_models.dart';
+import 'constants.dart';
+
+const SignInRoute = '/';
+const StoreRoute = "/store";
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+AccountData myAccount = new AccountData(
+  expiresIn: -1,
+  headers: {},
+  user_id: '',
+);
 
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Valo Store',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: CustomMaterialColors.DarkerOrange,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      onGenerateRoute: _routes(),
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  RouteFactory _routes() {
+    return (settings) {
+      //final Map<String, dynamic> arguments = settings.arguments;
+      Widget screen;
 
-  final String title;
+      switch (settings.name) {
+        case SignInRoute:
+          screen = SignIn();
+          break;
+        case StoreRoute:
+          screen = StorePage();
+          break;
+        default:
+          return null;
+      }
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  String text = "";
-  String username = "", password = "";
-  Store myStore = Store(offers: [], timeLeft: 0);
-  AccountData myAccount = AccountData(
-    expiresIn: 0,
-    headers: {},
-    user_id: "",
-  );
-  Map<String, WeaponSkin> skinLookup = new Map<String, WeaponSkin>();
-
-  Future<void> login() async {
-    AccountData _myAccount = await ValoApi.auth(
-      username,
-      password,
-    );
-    Store _myStore = await ValoApi.getStore(
-      _myAccount.headers,
-      _myAccount.user_id,
-      "EU",
-    );
-    skinLookup = await ValoApi.getSkinsLookupTable();
-
-    setState(() {
-      myStore = _myStore;
-      myAccount = _myAccount;
-
-      text = "Your skins are: \n";
-      myStore.offers.forEach((element) {
-        text += skinLookup[element]!.name + "\n";
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("ValoStore Demo UI"),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Username',
-              ),
-              onChanged: (value) => username = value,
-            ),
-            TextField(
-              obscureText: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Password',
-              ),
-              onChanged: (value) => password = value,
-            ),
-            SizedBox(height: 10),
-            TextButton(
-              onPressed: () => login(),
-              child: Text("Login"),
-            ),
-            SizedBox(height: 25),
-            Text(text),
-          ],
-        ),
-      ),
-    );
+      return MaterialPageRoute(builder: (BuildContext context) => screen);
+    };
   }
 }

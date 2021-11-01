@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountData {
   String user_id;
   Map<String, String> headers;
   int expiresIn;
+  bool loadedLocally = false;
 
   AccountData({
     required this.user_id,
@@ -13,7 +15,38 @@ class AccountData {
     if (headers == null) headers = new Map();
   }
 
-  // Dont think this will be used
+  Future<bool> saveLocally() async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+
+    // set value and return true if all complete
+    return await prefs.setString('user_id', this.user_id) &&
+        await prefs.setString('headers', jsonEncode(this.headers)) &&
+        await prefs.setInt("expires_in", expiresIn);
+  }
+
+  Future<bool> loadLocally() async {
+    if (loadedLocally) return true;
+
+    final prefs = await SharedPreferences.getInstance();
+
+    // Try reading data from the counter key. If it doesn't exist, return defualt value.
+    this.user_id = prefs.getString('user_id') ?? "";
+    this.expiresIn = prefs.getInt('expires_in') ?? -1;
+
+    String? json = prefs.getString("shoppingList");
+    if (json != null && json != "") {
+      this.headers = jsonDecode(json);
+    } else {
+      this.headers = new Map();
+    }
+
+    loadedLocally = true;
+    print("Loaded!");
+    return true;
+  }
+
+  // Might not be used...
   factory AccountData.fromJson(Map<String, dynamic> json) {
     return AccountData(
       user_id: json['id'],
