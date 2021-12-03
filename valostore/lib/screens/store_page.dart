@@ -3,6 +3,7 @@ import 'package:valostore/api/api_models.dart';
 import 'package:valostore/api/valo_api.dart';
 
 import '../main.dart';
+import 'general/store_item.dart';
 
 class StorePage extends StatefulWidget {
   const StorePage({Key? key}) : super(key: key);
@@ -12,11 +13,15 @@ class StorePage extends StatefulWidget {
 }
 
 class _StorePageState extends State<StorePage> {
-  String text = "";
-  String username = "", password = "";
+  List<Widget> storeItems = new List.filled(8, Container());
   Store myStore = Store(offers: [], timeLeft: 0);
 
   Map<String, WeaponSkin> skinLookup = new Map<String, WeaponSkin>();
+
+  void initState() {
+    getStore();
+    super.initState();
+  }
 
   Future<bool> getStore() async {
     Store _myStore = await ValoApi.getStore(
@@ -29,10 +34,10 @@ class _StorePageState extends State<StorePage> {
     setState(() {
       myStore = _myStore;
 
-      text = "Your skins are: \n";
-      myStore.offers.forEach((element) {
-        text += skinLookup[element]!.name + "\n";
-      });
+      for (int i = 0; i < myStore.offers.length; i++) {
+        WeaponSkin skin = skinLookup[myStore.offers[i]]!;
+        storeItems[i] = StoreItem(name: skin.name, image_link: skin.imageLink);
+      }
     });
 
     return true;
@@ -44,32 +49,13 @@ class _StorePageState extends State<StorePage> {
       appBar: AppBar(
         title: Text("ValoStore Demo UI"),
       ),
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.deepOrange,
       body: Center(
         child: Column(
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Username',
-              ),
-              onChanged: (value) => username = value,
-            ),
-            TextField(
-              obscureText: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Password',
-              ),
-              onChanged: (value) => password = value,
-            ),
-            SizedBox(height: 10),
-            TextButton(
-              onPressed: () => getStore(),
-              child: Text("Get Store"),
-            ),
-            SizedBox(height: 25),
-            Text(text),
-          ],
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: storeItems,
         ),
       ),
     );

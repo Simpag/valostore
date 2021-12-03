@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:valostore/api/valo_api.dart';
 import 'package:valostore/screens/sign_in.dart';
