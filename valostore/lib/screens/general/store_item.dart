@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants.dart';
+import 'dart:math' as math;
 
 class StoreItem extends StatelessWidget {
   final String image_link, name;
@@ -15,37 +16,47 @@ class StoreItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.longestSide * 0.15,
-      margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
+      width: MediaQuery.of(context).size.shortestSide * 0.9,
+      margin: EdgeInsets.symmetric(vertical: 10.0),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.black54,
         boxShadow: [
           BoxShadow(
             offset: Offset(0.00, 10.00),
-            color: CustomColors.LightBlue.withOpacity(0.20),
+            color: CustomColors.Blue,
             blurRadius: 10,
           ),
         ],
         borderRadius: BorderRadius.circular(_radius),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Container(
-            padding: EdgeInsets.only(left: 15.0),
-            width: MediaQuery.of(context).size.shortestSide * 0.3,
-            child: Text(
-              name,
-              style: TextStyle(fontSize: 18, color: Colors.white70),
-              textAlign: TextAlign.center,
+          Positioned(
+            left: 10,
+            child: Container(
+              //padding: EdgeInsets.only(left: 15.0),
+              width: MediaQuery.of(context).size.shortestSide * 0.3,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                name,
+                style: TextStyle(fontSize: 18, color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-          SizedBox(width: 25),
-          Container(
-            width: MediaQuery.of(context).size.shortestSide * 0.4,
-            height: MediaQuery.of(context).size.longestSide * 0.08,
-            child: Expanded(
-              child: Image.network(image_link),
+          Positioned(
+            right: 25,
+            child: Container(
+              width: MediaQuery.of(context).size.shortestSide * 0.4,
+              height: MediaQuery.of(context).size.longestSide * 0.08,
+              alignment: Alignment.center,
+              child: Container(
+                transform: Matrix4.rotationZ(math.pi / 4),
+                transformAlignment: Alignment.center,
+                child: Image.network(image_link),
+              ),
             ),
           ),
         ],

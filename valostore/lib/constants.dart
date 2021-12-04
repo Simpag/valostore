@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomColors {
+  static const Blue = Color.fromARGB(255, 50, 57, 73);
   static const DarkerBlue = Color.fromARGB(255, 0, 129, 246);
   static const TextBlack = Color.fromRGBO(26, 26, 26, 1);
   static const BackgroundGrey = Color.fromARGB(255, 242, 244, 243);
@@ -9,15 +10,13 @@ class CustomColors {
   static const LightBlue = Color(0xff44a6ff);
   static const CheckboxGrey = Color.fromRGBO(196, 196, 196, 1);
   static const DeleteRed = Color.fromRGBO(237, 40, 40, 1);
-  static const DarkerOrange = Color.fromRGBO(255, 102, 0, 1);
-  static const LigherOrange = Color.fromRGBO(255, 139, 61, 1);
 }
 
 class CustomGradients {
-  static const OrangeGradient = LinearGradient(
+  static const BlueGradient = LinearGradient(
     begin: Alignment.bottomLeft,
     end: Alignment.topRight,
-    colors: [CustomColors.DarkerOrange, CustomColors.LigherOrange],
+    colors: [CustomColors.DarkerBlue, Color.fromARGB(255, 50, 60, 80)],
   );
 
   static const RedGradient = LinearGradient(
@@ -34,21 +33,20 @@ class CustomGradients {
 }
 
 class CustomMaterialColors {
-  static const Map<int, Color> _darkerOrangeColorCodes = {
-    50: Color.fromRGBO(255, 102, 0, .1),
-    100: Color.fromRGBO(255, 102, 0, .2),
-    200: Color.fromRGBO(255, 102, 0, .3),
-    300: Color.fromRGBO(255, 102, 0, .4),
-    400: Color.fromRGBO(255, 102, 0, .5),
-    500: Color.fromRGBO(255, 102, 0, .6),
-    600: Color.fromRGBO(255, 102, 0, .7),
-    700: Color.fromRGBO(255, 102, 0, .8),
-    800: Color.fromRGBO(255, 102, 0, .9),
-    900: Color.fromRGBO(255, 102, 0, 1),
+  static const Map<int, Color> _blueColorCodes = {
+    50: Color.fromRGBO(50, 57, 73, .1),
+    100: Color.fromRGBO(50, 57, 73, .2),
+    200: Color.fromRGBO(50, 57, 73, .3),
+    300: Color.fromRGBO(50, 57, 73, .4),
+    400: Color.fromRGBO(50, 57, 73, .5),
+    500: Color.fromRGBO(50, 57, 73, .6),
+    600: Color.fromRGBO(50, 57, 73, .7),
+    700: Color.fromRGBO(50, 57, 73, .8),
+    800: Color.fromRGBO(50, 57, 73, .9),
+    900: Color.fromRGBO(50, 57, 73, 1),
   };
-// Green color code: FF93cd48
-  static const MaterialColor DarkerOrange =
-      MaterialColor(0xFFFF6600, _darkerOrangeColorCodes);
+// Green color code: 0081f6
+  static const MaterialColor Blue = MaterialColor(0xFF0081f6, _blueColorCodes);
 }
 
 class CustomUrls {

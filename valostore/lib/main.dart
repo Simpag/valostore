@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Valo Store',
       theme: ThemeData(
-        primarySwatch: CustomMaterialColors.DarkerOrange,
+        primarySwatch: CustomMaterialColors.Blue,
       ),
       onGenerateRoute: _routes(),
     );

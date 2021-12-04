@@ -60,7 +60,7 @@ class _SignInState extends State<SignIn> {
     HapticFeedback.vibrate();
 
     return new Scaffold(
-      backgroundColor: CustomColors.BackgroundGrey,
+      backgroundColor: CustomColors.Blue,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -83,7 +83,7 @@ class _SignInState extends State<SignIn> {
 
   Scaffold _loadingPage(AsyncSnapshot<bool> snapshot) {
     return new Scaffold(
-      backgroundColor: CustomColors.BackgroundGrey,
+      backgroundColor: CustomColors.Blue,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +109,7 @@ class _SignInState extends State<SignIn> {
     if (myAccount.user_id != "") _termsChecked = true;
 
     return new Scaffold(
-      backgroundColor: CustomColors.BackgroundGrey,
+      backgroundColor: CustomColors.Blue,
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -126,16 +126,16 @@ class _SignInState extends State<SignIn> {
               children: <Widget>[
                 Spacer(),
                 _buildLogo(),
-                Spacer(),
                 _buildUserName(),
                 _buildPassword(),
-                Spacer(),
+                SizedBox(height: 10.0),
                 _termsAndConditions(),
-                Spacer(),
+                SizedBox(height: 30.0),
                 CustomButton(
                   title: "Sign In",
                   onPressed: _onSignInPressed,
                 ),
+                Spacer(),
                 Spacer(),
               ],
             ),
@@ -152,7 +152,7 @@ class _SignInState extends State<SignIn> {
         labelText: hint,
         enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: CustomColors.BorderGrey)),
-        labelStyle: TextStyle(color: CustomColors.TextBlack),
+        labelStyle: TextStyle(color: CustomColors.BorderGrey),
         prefixIcon: iconPath != '' ? Image.asset(iconPath) : null,
         errorStyle: TextStyle(color: CustomColors.ErrorRed),
         errorBorder: UnderlineInputBorder(
@@ -164,7 +164,7 @@ class _SignInState extends State<SignIn> {
   Widget _buildLogo() {
     return Container(
       constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.longestSide / 8),
+          maxHeight: MediaQuery.of(context).size.longestSide / 3),
       child: Container(
         constraints: BoxConstraints(maxHeight: 10000),
         child: Image.asset(
@@ -183,7 +183,7 @@ class _SignInState extends State<SignIn> {
       child: TextFormField(
         validator: (value) => isName(value),
         style: TextStyle(
-          color: Colors.black,
+          color: CustomColors.BorderGrey,
         ),
         decoration: _buildInputDecoration("Username", ""),
         onSaved: (val) => this.username = val,
@@ -198,7 +198,7 @@ class _SignInState extends State<SignIn> {
       child: TextFormField(
         validator: (value) => isPassword(value),
         style: TextStyle(
-          color: Colors.black,
+          color: CustomColors.BorderGrey,
         ),
         decoration: _buildInputDecoration("Password", ''),
         obscureText: true,
@@ -234,6 +234,7 @@ class _SignInState extends State<SignIn> {
         children: [
           Checkbox(
             value: _termsChecked,
+            activeColor: CustomColors.BorderGrey.withOpacity(0.2),
             onChanged: (val) => setState(() => _termsChecked = val!),
           ),
           Flexible(
@@ -265,7 +266,7 @@ class _SignInState extends State<SignIn> {
         children: [
           new TextSpan(
             text: 'I agree with the ',
-            style: new TextStyle(color: CustomColors.TextBlack),
+            style: new TextStyle(color: CustomColors.BorderGrey),
           ),
           new TextSpan(
             text: 'Terms and Conditions',
@@ -274,7 +275,7 @@ class _SignInState extends State<SignIn> {
           ),
           new TextSpan(
             text: ' and the ',
-            style: new TextStyle(color: CustomColors.TextBlack),
+            style: new TextStyle(color: CustomColors.BorderGrey),
           ),
           new TextSpan(
             text: 'Privacy Policy.',
