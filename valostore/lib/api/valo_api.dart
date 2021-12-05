@@ -46,6 +46,7 @@ class ValoApi {
     if (response.statusCode != 200) {
       throw Exception("Could not authenticate");
     }
+    cookies.updateCookies(response); // Store the ssid cookie
     Map<String, dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
     // Find access token and a few other tokens
     RegExp regExpAccess =
@@ -57,6 +58,7 @@ class ValoApi {
     int expires_in = int.parse(regExpExpire
         .stringMatch(body['response']['parameters']['uri'])!
         .substring(11));
+    String ssid = "ssid=${cookies.cookies['ssid']}";
 
     // Get entitlement token
     headers['Authorization'] = "Bearer $access_token";
@@ -89,7 +91,53 @@ class ValoApi {
     client.close();
     print("Authenticated!");
     return AccountData(
-        user_id: user_id, headers: headers, expiresIn: expires_in);
+      user_id: user_id,
+      headers: headers,
+      expiresIn: expires_in,
+      ssid_cookie: ssid,
+    );
+  }
+
+  static Future<AccountData> reauth(AccountData account) async {
+    var client = http.Client();
+
+    Map<String, String> headers = {"Cookie": account.ssid_cookie};
+    Map<String, dynamic> data = {
+      'client_id': 'play-valorant-web-prod',
+      'nonce': '1',
+      'redirect_uri': 'https://playvalorant.com/opt_in',
+      'response_type': 'token id_token',
+    };
+    String json = jsonEncode(data);
+    http.Response response = await client.post(
+      Uri.parse("https://auth.riotgames.com/api/v1/authorization"),
+      headers: headers,
+      body: json,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Could not authenticate");
+    }
+
+    Map<String, dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
+    // Find access token and a few other tokens
+    RegExp regExpAccess =
+        new RegExp("access_token=(?:[a-zA-Z]|[0-9]|\\.|-|_)+");
+    RegExp regExpExpire = new RegExp("expires_in=([0-9]*)");
+    String access_token = regExpAccess
+        .stringMatch(body['response']['parameters']['uri'])!
+        .substring(13);
+    int expires_in = int.parse(regExpExpire
+        .stringMatch(body['response']['parameters']['uri'])!
+        .substring(11));
+
+    account.headers['Authorization'] = "Bearer $access_token";
+    account.expiresIn = expires_in;
+
+    client.close();
+    print("Re-authenticated!");
+
+    return account;
   }
 
   static Future<Map<String, WeaponSkin>> getSkinsLookupTable() async {
@@ -115,14 +163,14 @@ class ValoApi {
   }
 
   static Future<Store> getStore(
-    Map<String, String> headers,
+    Map<String, dynamic> headers,
     String user_id,
     String region,
   ) async {
     var client = http.Client();
     http.Response response = await client.get(
       Uri.parse("https://pd.$region.a.pvp.net/store/v2/storefront/$user_id"),
-      headers: headers,
+      headers: headers as Map<String, String>,
     );
 
     if (response.statusCode != 200) {

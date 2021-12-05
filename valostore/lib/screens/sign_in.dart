@@ -10,6 +10,11 @@ import 'package:valostore/constants.dart';
 import '../main.dart';
 import 'general/custom_button.dart';
 
+/*
+    SET UP IOS BACKGROUND FETCH
+    https://github.com/transistorsoft/flutter_background_fetch/blob/master/help/INSTALL-IOS.md 
+*/
+
 class SignIn extends StatefulWidget {
   @override
   _SignInState createState() => new _SignInState();

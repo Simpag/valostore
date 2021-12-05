@@ -18,6 +18,7 @@ AccountData myAccount = new AccountData(
   expiresIn: -1,
   headers: {},
   user_id: '',
+  ssid_cookie: '',
 );
 
 class MyApp extends StatelessWidget {

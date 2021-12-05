@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:valostore/api/api_models.dart';
 import 'package:valostore/api/valo_api.dart';
 
@@ -24,10 +25,10 @@ class _StorePageState extends State<StorePage> {
   Map<String, WeaponSkin> skinLookup = new Map<String, WeaponSkin>();
 
   void initState() {
-    getStore();
     timeLeftUpdater =
         Timer.periodic(Duration(seconds: 1), (Timer t) => updateBanner());
     super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) => getStore());
   }
 
   @override
@@ -37,6 +38,12 @@ class _StorePageState extends State<StorePage> {
   }
 
   Future<bool> getStore() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => _buildLoadingPopup(context),
+    );
+
     Store _myStore = await ValoApi.getStore(
       myAccount.headers,
       myAccount.user_id,
@@ -52,6 +59,8 @@ class _StorePageState extends State<StorePage> {
         storeItems[i] = StoreItem(name: skin.name, image_link: skin.imageLink);
       }
     });
+
+    Navigator.of(context).pop(); // close the popup
 
     return true;
   }
@@ -103,13 +112,13 @@ class _StorePageState extends State<StorePage> {
       height: MediaQuery.of(context).size.longestSide * 0.05,
       width: MediaQuery.of(context).size.longestSide * 0.05,
       child: IconButton(
-        icon: Icon(Icons.settings),
+        icon: Icon(Icons.list_alt),
         alignment: Alignment.center,
         padding: EdgeInsets.zero,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         color: Colors.white.withOpacity(0.7),
-        onPressed: () => print("Not implemented yet"),
+        onPressed: () => HapticFeedback.heavyImpact(),
       ),
     );
   }
@@ -136,7 +145,10 @@ class _StorePageState extends State<StorePage> {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         color: Colors.white.withOpacity(0.7),
-        onPressed: getStore,
+        onPressed: () {
+          HapticFeedback.mediumImpact();
+          getStore();
+        },
       ),
     );
   }
@@ -193,6 +205,22 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
+  Widget _buildLoadingPopup(BuildContext context) {
+    return new AlertDialog(
+      backgroundColor: CustomColors.Blue.withOpacity(0.5),
+      contentPadding: EdgeInsets.all(70),
+      content: AspectRatio(
+        aspectRatio: 1.0,
+        child: Container(
+          child: CircularProgressIndicator(
+            color: CustomColors.BorderGrey.withOpacity(0.75),
+            strokeWidth: 10.0,
+          ),
+        ),
+      ),
+    );
+  }
+
   void updateBanner() {
     setState(() {
       myStore.timeLeft -= 1;
@@ -209,7 +237,16 @@ class _StorePageState extends State<StorePage> {
 
     s = value - (h * 3600) - (m * 60);
 
-    String result = "$h:$m:$s";
+    String hourLeft =
+        h.toString().length < 2 ? "0" + h.toString() : h.toString();
+
+    String minuteLeft =
+        m.toString().length < 2 ? "0" + m.toString() : m.toString();
+
+    String secondsLeft =
+        s.toString().length < 2 ? "0" + s.toString() : s.toString();
+
+    String result = "$hourLeft:$minuteLeft:$secondsLeft";
 
     return result;
   }
