@@ -1,4 +1,4 @@
-package com.example.valostore
+package com.simon.valostore
 
 import io.flutter.embedding.android.FlutterActivity
 

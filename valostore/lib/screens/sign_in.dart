@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'package:background_fetch/background_fetch.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'package:valostore/api/api_models.dart';
 import 'package:valostore/api/valo_api.dart';
 import 'package:valostore/constants.dart';
@@ -25,6 +28,7 @@ class _SignInState extends State<SignIn> {
 
   final _formKey = new GlobalKey<FormState>();
   bool _termsChecked = false;
+  bool _rememberMeChecked = false;
   bool wrongPassword = false;
   String? username = "";
   String? password = "";
@@ -33,6 +37,8 @@ class _SignInState extends State<SignIn> {
   void initState() {
     _tosRecognizer = TapGestureRecognizer()
       ..onTap = () => _launchURL(CustomUrls.TermsAndConditions);
+    // If there already exists a user id then the user have accepted the terms before
+    if (myAccount.user_id != "") _termsChecked = true;
     super.initState();
   }
 
@@ -40,6 +46,45 @@ class _SignInState extends State<SignIn> {
   void dispose() {
     _tosRecognizer.dispose();
     super.dispose();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> keepAuthenticated() async {
+    print("Keep authenticated!");
+    // Configure BackgroundFetch.
+    int status = await BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: 15,
+            stopOnTerminate: true,
+            enableHeadless: false,
+            requiresBatteryNotLow: false,
+            requiresCharging: false,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            requiredNetworkType: NetworkType.ANY), (String taskId) async {
+      // <-- Event handler
+      // This is the fetch-event callback.
+      print("[BackgroundFetch] Event received $taskId");
+      try {
+        myAccount = await ValoApi.reauth(myAccount);
+      } catch (e) {
+        print("Coult not reauth!");
+      }
+      // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+      // for taking too long in the background.
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) async {
+      // <-- Task timeout handler.
+      // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
+      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+      BackgroundFetch.finish(taskId);
+    });
+    print('[BackgroundFetch] configure success: $status');
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
   }
 
   @override
@@ -110,9 +155,6 @@ class _SignInState extends State<SignIn> {
   }
 
   Scaffold _signInPage() {
-    // If there already exists a user id then the user have accepted the terms before
-    if (myAccount.user_id != "") _termsChecked = true;
-
     return new Scaffold(
       backgroundColor: CustomColors.Blue,
       resizeToAvoidBottomInset: false,
@@ -133,6 +175,7 @@ class _SignInState extends State<SignIn> {
                 _buildLogo(),
                 _buildUserName(),
                 _buildPassword(),
+                _buildRememberMe(),
                 SizedBox(height: 10.0),
                 _termsAndConditions(),
                 SizedBox(height: 30.0),
@@ -213,6 +256,30 @@ class _SignInState extends State<SignIn> {
     );
   }
 
+  Widget _buildRememberMe() {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 15.0,
+      ),
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          Checkbox(
+            value: _rememberMeChecked,
+            activeColor: const Color(0xffFE424F),
+            onChanged: (val) {
+              setState(() => _rememberMeChecked = val!);
+            },
+          ),
+          Text(
+            "Remember me",
+            style: new TextStyle(color: CustomColors.BorderGrey),
+          ),
+        ],
+      ),
+    );
+  }
+
   String? isName(String? value) {
     if (value == null || value.isEmpty) {
       return "Username can't be empty!";
@@ -239,7 +306,7 @@ class _SignInState extends State<SignIn> {
         children: [
           Checkbox(
             value: _termsChecked,
-            activeColor: CustomColors.BorderGrey.withOpacity(0.2),
+            activeColor: const Color(0xffFE424F),
             onChanged: (val) => setState(() => _termsChecked = val!),
           ),
           Flexible(
@@ -313,6 +380,9 @@ class _SignInState extends State<SignIn> {
     wrongPassword = false;
     if (_validateInput()) {
       if (await _signIn()) {
+        myAccount.rememberMe = _rememberMeChecked;
+        print(myAccount.rememberMe);
+        if (myAccount.rememberMe) await keepAuthenticated();
         _saveLocally();
         _nextPage();
       } else {

@@ -1,5 +1,6 @@
 // @dart=2.9
 import 'package:flutter/material.dart';
+
 import 'package:valostore/api/valo_api.dart';
 import 'package:valostore/screens/sign_in.dart';
 import 'package:valostore/screens/store_page.dart';
@@ -21,13 +22,23 @@ AccountData myAccount = new AccountData(
   ssid_cookie: '',
 );
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => new _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Valo Store',
+      title: 'ValStore',
       theme: ThemeData(
         primarySwatch: CustomMaterialColors.Blue,
       ),

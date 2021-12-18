@@ -7,6 +7,7 @@ class AccountData {
   Map<String, dynamic> headers;
   int expiresIn;
   bool loadedLocally = false;
+  bool rememberMe = false;
 
   AccountData({
     required this.user_id,
@@ -26,7 +27,8 @@ class AccountData {
     return await prefs.setString('user_id', this.user_id) &&
         await prefs.setString('headers', jsonEncode(this.headers)) &&
         await prefs.setInt("expires_in", this.expiresIn) &&
-        await prefs.setString('ssid_cookie', this.ssid_cookie);
+        await prefs.setString('ssid_cookie', this.ssid_cookie) &&
+        await prefs.setBool("rememberMe", this.rememberMe);
   }
 
   Future<bool> loadLocally() async {
@@ -38,6 +40,7 @@ class AccountData {
     this.user_id = prefs.getString('user_id') ?? "";
     this.expiresIn = prefs.getInt('expires_in') ?? -1;
     this.ssid_cookie = prefs.getString('ssid_cookie') ?? "";
+    this.rememberMe = prefs.getBool("rememberMe") ?? false;
 
     String? json = prefs.getString("headers");
     if (json != null && json != "") {
