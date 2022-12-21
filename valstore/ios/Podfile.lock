@@ -1,5 +1,5 @@
 PODS:
-  - background_fetch (1.0.3):
+  - background_fetch (1.1.2):
     - Flutter
   - Flutter (1.0.0)
   - shared_preferences_ios (0.0.1):
@@ -24,11 +24,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  background_fetch: 8fa13640fc6e658a7c2e9a2dbc07af8650af215c
-  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  shared_preferences_ios: aef470a42dc4675a1cdd50e3158b42e3d1232b32
-  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
+  background_fetch: aaf8fc9d1da7f04e5373aabd4bb239704a5be6eb
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
+  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

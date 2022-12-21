@@ -30,15 +30,13 @@ class _SignInState extends State<SignIn> {
   bool _termsChecked = false;
   bool _rememberMeChecked = false;
   bool wrongPassword = false;
-  String? username = "";
-  String? password = "";
+  String? username;
+  String? password;
 
   @override
   void initState() {
     _tosRecognizer = TapGestureRecognizer()
       ..onTap = () => _launchURL(CustomUrls.TermsAndConditions);
-    // If there already exists a user id then the user have accepted the terms before
-    if (myAccount.user_id != "") _termsChecked = true;
     super.initState();
   }
 
@@ -46,6 +44,20 @@ class _SignInState extends State<SignIn> {
   void dispose() {
     _tosRecognizer.dispose();
     super.dispose();
+  }
+
+  Future<bool> loadAccount() async {
+    // If there already exists a user id then the user have accepted the terms before
+    await myAccount.loadLocally();
+
+    if (myAccount.user_id != "") {
+      _termsChecked = true;
+      _rememberMeChecked = true;
+      username = myAccount.username;
+      password = myAccount.password;
+    }
+
+    return true;
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -90,7 +102,7 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: myAccount.loadLocally(),
+      future: loadAccount(),
       builder: (BuildContext _context, AsyncSnapshot<bool> snapshot) {
         Scaffold page;
 
@@ -235,7 +247,7 @@ class _SignInState extends State<SignIn> {
         ),
         decoration: _buildInputDecoration("Username", ""),
         onSaved: (val) => this.username = val,
-        initialValue: "",
+        initialValue: this.username,
         onFieldSubmitted: (s) => _onSignInPressed(),
       ),
     );
@@ -252,7 +264,7 @@ class _SignInState extends State<SignIn> {
         decoration: _buildInputDecoration("Password", ''),
         obscureText: true,
         onSaved: (val) => this.password = val,
-        initialValue: "",
+        initialValue: this.password,
         onFieldSubmitted: (s) => _onSignInPressed(),
       ),
     );
@@ -400,6 +412,7 @@ class _SignInState extends State<SignIn> {
       _myAccount = await ValoApi.auth(
         username!,
         password!,
+        myAccount,
       );
     } catch (e) {
       return false;

@@ -46,8 +46,7 @@ class _StorePageState extends State<StorePage> {
     );
 
     Store _myStore = await ValoApi.getStore(
-      myAccount.headers,
-      myAccount.user_id,
+      myAccount,
       "EU",
     );
     skinLookup = await ValoApi.getSkinsLookupTable();
@@ -281,8 +280,8 @@ class _StorePageState extends State<StorePage> {
 
   Future<void> _signOut() async {
     HapticFeedback.mediumImpact();
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.clear();
+    //SharedPreferences preferences = await SharedPreferences.getInstance();
+    //await preferences.clear();
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, SignInRoute);
   }

@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountData {
   String user_id;
+  String? username;
+  String? password;
   String ssid_cookie;
   Map<String, dynamic> headers;
   int expiresIn;
@@ -28,7 +30,9 @@ class AccountData {
         await prefs.setString('headers', jsonEncode(this.headers)) &&
         await prefs.setInt("expires_in", this.expiresIn) &&
         await prefs.setString('ssid_cookie', this.ssid_cookie) &&
-        await prefs.setBool("rememberMe", this.rememberMe);
+        await prefs.setBool("rememberMe", this.rememberMe) &&
+        await prefs.setString('username', this.username ?? '') &&
+        await prefs.setString('password', this.password ?? '');
   }
 
   Future<bool> loadLocally() async {
@@ -38,9 +42,11 @@ class AccountData {
 
     // Try reading data from the counter key. If it doesn't exist, return defualt value.
     this.user_id = prefs.getString('user_id') ?? "";
+    this.username = prefs.getString('username') ?? '';
     this.expiresIn = prefs.getInt('expires_in') ?? -1;
     this.ssid_cookie = prefs.getString('ssid_cookie') ?? "";
     this.rememberMe = prefs.getBool("rememberMe") ?? false;
+    this.password = prefs.getString('password') ?? '';
 
     String? json = prefs.getString("headers");
     if (json != null && json != "") {
@@ -52,6 +58,13 @@ class AccountData {
     loadedLocally = true;
     print("Loaded!");
     return true;
+  }
+
+  String getString() {
+    String self =
+        'User_ID: $user_id, username: $username, expries_in: $expiresIn';
+
+    return self;
   }
 
   // Might not be used...

@@ -32,7 +32,20 @@ class CustomButton extends StatelessWidget {
           ),
         ],
       ),
-      child: FlatButton(
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(
+          Icons.arrow_forward,
+          color: CustomColors.BackgroundGrey.withOpacity(0.95),
+          size: 40.0,
+        ),
+      ),
+    );
+  }
+}
+
+/*
+child: FlatButton(
         onPressed: onPressed,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_radius),
@@ -45,6 +58,4 @@ class CustomButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
+*/

@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:valstore/api/cookie_handler.dart';
 
 class ValoApi {
-  static Future<AccountData> auth(String username, String password) async {
+  static Future<AccountData> auth(
+      String username, String password, AccountData accountData) async {
     var client = http.Client();
     var cookies = cki();
 
@@ -90,12 +91,14 @@ class ValoApi {
 
     client.close();
     print("Authenticated!");
-    return AccountData(
-      user_id: user_id,
-      headers: headers,
-      expiresIn: expires_in,
-      ssid_cookie: ssid,
-    );
+
+    accountData.user_id = user_id;
+    accountData.headers = headers;
+    accountData.expiresIn = expires_in;
+    accountData.ssid_cookie = ssid;
+    accountData.username = username;
+    accountData.password = password;
+    return accountData;
   }
 
   static Future<AccountData> reauth(AccountData account) async {
@@ -163,18 +166,28 @@ class ValoApi {
   }
 
   static Future<Store> getStore(
-    Map<String, dynamic> headers,
-    String user_id,
+    AccountData account,
     String region,
   ) async {
     var client = http.Client();
     http.Response response = await client.get(
-      Uri.parse("https://pd.$region.a.pvp.net/store/v2/storefront/$user_id"),
-      headers: headers as Map<String, String>,
+      Uri.parse(
+          "https://pd.$region.a.pvp.net/store/v2/storefront/${account.user_id}"),
+      headers: account.headers as Map<String, String>,
     );
 
     if (response.statusCode != 200) {
-      throw Exception("Could not authenticate");
+      //throw Exception("Could not authenticate");
+      account =
+          await auth(account.username ?? '', account.password ?? '', account);
+
+      response = await client.get(
+        Uri.parse(
+            "https://pd.$region.a.pvp.net/store/v2/storefront/${account.user_id}"),
+        headers: account.headers as Map<String, String>,
+      );
+
+      if (response.statusCode != 200) throw Exception("Could not authenticate");
     }
     Map<String, dynamic> json =
         jsonDecode(utf8.decode(response.bodyBytes))['SkinsPanelLayout'];
